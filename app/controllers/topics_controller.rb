@@ -1,4 +1,6 @@
 class TopicsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:index, :show]
+
   def update_thermometer
     @topic = Topic.find(params[:id])
     total_votes = @topic.comments.where(status: %w[for against]).count
@@ -28,7 +30,7 @@ class TopicsController < ApplicationController
     @user = current_user
 
     @comments = @topic.comments
-    @new_comment = Comment.new
+    @new_comment = @topic.comments.build
     @main_comments = @comments.where(parent_id: nil)
 
     @for_votes = @main_comments.where(status: 'for').count

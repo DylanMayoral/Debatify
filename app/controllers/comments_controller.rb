@@ -1,6 +1,6 @@
 class CommentsController < ApplicationController
   # after_initialize :set_default_votes, if: :new_record?
-
+  before_action :authenticate_user!, only: [:create]
 
   def new
 

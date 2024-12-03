@@ -18,19 +18,23 @@
     </div>
     <div class="d-flex justify-content-end mt-auto">
       <div class="d-flex justify-content-end mt-auto">
-        <% if current_user.favorited?(@topic) %>
-          <%= button_to topic_favorite_path(@topic), method: :delete, remote: true, class: "btn btn-link p-0" do %>
-            <i class="fa-solid fa-star text-warning"></i> <!-- Filled star for favorited -->
+        <% if current_user %>
+          <% if current_user.favorited?(@topic) %>
+            <%= button_to topic_favorite_path(@topic), method: :delete, remote: true, class: "btn btn-link p-0" do %>
+              <i class="fa-solid fa-star text-warning"></i>
+            <% end %>
+          <% else %>
+            <%= button_to topic_favorite_path(@topic), method: :post, remote: true, class: "btn btn-link p-0" do %>
+              <i class="fa-regular fa-star"></i>
+            <% end %>
           <% end %>
         <% else %>
-          <%= button_to topic_favorite_path(@topic), method: :post, remote: true, class: "btn btn-link p-0" do %>
-            <i class="fa-regular fa-star"></i> <!-- Empty star for not favorited -->
-          <% end %>
+          <%= link_to "Log in to favorite this topic", new_user_session_path, class: "btn btn-link p-0" %>
         <% end %>
       </div>
     </div>
   </div>
-  <!-- Show the Ai and the graph -->
+
   <!-- Thermometer Section -->
   <div class="middle-part mb-3">
     <div class="row">
@@ -39,10 +43,13 @@
           <%= render partial: "thermometer", locals: { thermometer_percentage: @thermometer_percentage } %>
         </turbo-frame>
       </div>
-      <div class="col-6 center p-3 d-flex justify-content-center align-items-center fst-italic"><%= @content %></div>
+      <div class="col-6 center p-3 d-flex justify-content-center align-items-center fst-italic">
+        <%= @content %>
+      </div>
       <div class="col-3 right p-3"></div>
     </div>
   </div>
+
   <!-- Show the counts for comments -->
   <div class="row w-100 text-center">
     <div class="col-4">
@@ -61,114 +68,74 @@
       </strong>
     </div>
   </div>
-  <div class="anf-bar row w-100 text-center">
-    <div class="col-4 a-bar"></div>
-    <div class="col-4 n-bar"></div>
-    <div class="col-4 f-bar"></div>
-  </div>
+
+  <!-- Display comments grouped by status -->
   <div class="all-comments row w-100">
-    <div class="col-4 d-flex flex-column align-items-center a-comments mt-3 border-end">
-      <% comments_against = @comments.where(parent_id: nil, status: "against").sort_by { |comment| comment.votes.count }.reverse.take(3) %>
-      <% if comments_against.any? %>
-        <% comments_against.each do |comment| %>
-          <%= render 'comment', comment: comment, new_comment: @new_comment %>
-        <% end %>
-        <% if @comments.where(parent_id: nil, status: "against").count > 3 %>
-          <button type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#more-against-comments" aria-expanded="false" aria-controls="more-against-comments" style="font-size: 1.5rem;" title="See more">
-            <i class="fa-solid fa-caret-down"></i>
-          </button>
-          <div class="collapse" id="more-against-comments" style="margin-top: 5px; width: 100%;">
-            <% @comments.where(parent_id: nil, status: "against").sort_by { |comment| comment.votes.count }.reverse.drop(3).each do |comment| %>
-              <div class="comment-item"> <!-- Added wrapper for consistent styling -->
-                <%= render 'comment', comment: comment %>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-      <% else %>
-        <p>No <strong>against</strong> comments yet.</p>
-      <% end %>
-    </div>
-    <div class="col-4 d-flex flex-column align-items-center n-comments mt-3 border-end">
-      <% comments_neutral = @comments.where(parent_id: nil, status: "neutral").sort_by { |comment| comment.votes.count }.reverse.take(3) %>
-      <% if comments_neutral.any? %>
-        <% comments_neutral.each do |comment| %>
-          <%= render 'comment', comment: comment, new_comment: @new_comment %>
-        <% end %>
-        <% if @comments.where(parent_id: nil, status: "neutral").count > 3 %>
-          <button type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#more-neutral-comments" aria-expanded="false" aria-controls="more-neutral-comments" style="font-size: 1.5rem;" title="See more">
-            <i class="fa-solid fa-caret-down"></i>
-          </button>
-          <div class="collapse" id="more-neutral-comments" style="margin-top: 5px; width: 100%;">
-            <% @comments.where(parent_id: nil, status: "neutral").sort_by { |comment| comment.votes.count }.reverse.drop(3).each do |comment| %>
-              <div class="comment-item"> <!-- Added wrapper for consistent styling -->
-                <%= render 'comment', comment: comment %>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-      <% else %>
-        <p>No <strong>neutral</strong> comments yet.</p>
-      <% end %>
-    </div>
-    <div class="col-4 d-flex flex-column align-items-center f-comments mt-3">
-      <% comments_for = @comments.where(parent_id: nil, status: "for").sort_by { |comment| comment.votes.count }.reverse.take(3) %>
-      <% if comments_for.any? %>
-        <% comments_for.each do |comment| %>
-          <%= render 'comment', comment: comment, new_comment: @new_comment %>
-        <% end %>
-        <% if @comments.where(parent_id: nil, status: "for").count > 3 %>
-          <button type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#more-for-comments" aria-expanded="false" aria-controls="more-for-comments" style="font-size: 1.5rem;" title="See more">
-            <i class="fa-solid fa-caret-down"></i>
-          </button>
-          <div class="collapse" id="more-for-comments" style="margin-top: 5px; width: 100%;">
-            <% @comments.where(parent_id: nil, status: "for").sort_by { |comment| comment.votes.count }.reverse.drop(3).each do |comment| %>
-              <div class="comment-item"> <!-- Added wrapper for consistent styling -->
-                <%= render 'comment', comment: comment %>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-      <% else %>
-        <p>No <strong>for</strong> comments yet.</p>
-      <% end %>
-    </div>
-  </div>
-  <button type="button" class="btn btn-comments mt-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Write a comment
-  </button>
-</div>
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a comment</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
-        <div data-controller="comment">
-          <div class=" mb-3">
-            <p><strong><%= @topic.title %></strong></p>
-            <p><em><%= @topic.description %></em></p>
-          </div>
-          <div class="mb-3">
-            <% user_comment = current_user.comments.where(topic: @topic).first %>
-            <% if user_comment.present? %>
-              <p>You have already commented on this topic. You cannot change your side.</p>
-            <% else %>
-              <p>Please select your stance on this topic:</p>
-              <button type="button" class="btn btn-against me-2" data-side="against" data-action="comment#selectSide" data-comment-target="sideButton">Against</button>
-              <button type="button" class="btn btn-neutral me-2" data-side="neutral" data-action="comment#selectSide" data-comment-target="sideButton">Neutral</button>
-              <button type="button" class="btn btn-for" data-side="for" data-action="comment#selectSide" data-comment-target="sideButton">For</button>
-            <% end %>
-          </div>
-          <%= simple_form_for [@topic, @comment] do |f| %>
-            <%= f.hidden_field :status, id: "comment-status", data: { comment_target: "statusField" } %>
-            <div class="mb-3">
-              <%= f.input :content, required: true, label: "Your Comment" %>
+    <% ["against", "neutral", "for"].each do |status| %>
+      <div class="col-4 d-flex flex-column align-items-center mt-3 <%= "border-end" unless status == "for" %>">
+        <% comments = @comments.where(parent_id: nil, status: status).sort_by { |comment| comment.votes.count }.reverse.take(3) %>
+        <% if comments.any? %>
+          <% comments.each do |comment| %>
+            <div class="comment-item">
+              <%= render 'comment', comment: comment, new_comment: @new_comment %>
             </div>
-            <%= f.submit "Post Comment", class: "btn btn-comments", disabled: true, id: "post-comment-button", data: { comment_target: "postButton" } %>
           <% end %>
+          <% if @comments.where(parent_id: nil, status: status).count > 3 %>
+            <button type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#more-<%= status %>-comments" aria-expanded="false" aria-controls="more-<%= status %>-comments" style="font-size: 1.5rem;" title="See more">
+              <i class="fa-solid fa-caret-down"></i>
+            </button>
+            <div class="collapse" id="more-<%= status %>-comments" style="margin-top: 5px; width: 100%;">
+              <% @comments.where(parent_id: nil, status: status).sort_by { |comment| comment.votes.count }.reverse.drop(3).each do |comment| %>
+                <div class="comment-item">
+                  <%= render 'comment', comment: comment, new_comment: @new_comment %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <p>No <strong><%= status %></strong> comments yet.</p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Comment modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add a comment</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+          <div data-controller="comment">
+            <div class=" mb-3">
+              <p><strong><%= @topic.title %></strong></p>
+              <p><em><%= @topic.description %></em></p>
+            </div>
+            <div class="mb-3">
+              <% if current_user %>
+                <% user_comment = current_user.comments.where(topic: @topic).first %>
+                <% if user_comment.present? %>
+                  <p>You have already commented on this topic. You cannot change your side.</p>
+                <% else %>
+                  <p>Please select your stance on this topic:</p>
+                  <button type="button" class="btn btn-against me-2" data-side="against" data-action="comment#selectSide" data-comment-target="sideButton">Against</button>
+                  <button type="button" class="btn btn-neutral me-2" data-side="neutral" data-action="comment#selectSide" data-comment-target="sideButton">Neutral</button>
+                  <button type="button" class="btn btn-for" data-side="for" data-action="comment#selectSide" data-comment-target="sideButton">For</button>
+                <% end %>
+              <% else %>
+                <p>Please <%= link_to 'log in', new_user_session_path %> to leave a comment.</p>
+              <% end %>
+            </div>
+            <%= simple_form_for [@topic, @comment] do |f| %>
+              <%= f.hidden_field :status, id: "comment-status", data: { comment_target: "statusField" } %>
+              <div class="mb-3">
+                <%= f.input :content, required: true, label: "Your Comment" %>
+              </div>
+              <%= f.submit "Post Comment", class: "btn btn-comments", disabled: true, id: "post-comment-button", data: { comment_target: "postButton" } %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

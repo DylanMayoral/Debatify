@@ -1,33 +1,18 @@
 <div id="replies_turbo_<%= comment.id %>">
-  <div class="d-flex justify-content-between mt-3">
-    <div class="d-flex align-items-center mt-0">
-      <i class="fa-regular fa-comments" data-action="click->toggle#toggleReplies"></i>
-      <p > <%= comment.comments.count %> </p>
-    </div>
-    <div class="d-flex align-items-center">
-      <% if comment.parent_id == nil %>
-        <%= render 'topics/button', comment: comment %>
-        <p class="mb-0" id="vote-count-<%= comment.id %>" data-vote-target="voteCount"> <%= comment.votes.count %> </p>
-        <%= render 'topics/form', comment: comment %>
-      <% end %>
-    </div>
-  </div>
-  <div class="replies d-flex flex-column justify-content-end <%= "reply-expand" if defined?(expanded) && expanded %> "  data-toggle-target="replies" >
+  <div class="replies d-flex flex-column">
     <% comment.comments.order(:created_at).each do |reply| %>
-      <div class="sub-comment d-flex" data-controller="vote" data-vote-id="<%= reply.id %>">
-        <!-- Avatar -->
+      <div class="sub-comment d-flex">
         <% if reply.user.photo.present? %>
-          <%= cl_image_tag reply.user.photo.key, style: "width: 20px; height: 20px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); outline: 2px solid #d4c1a9;" %>
+          <%= cl_image_tag reply.user.photo.key, style: "width: 20px; height: 20px; border-radius: 50%;" %>
         <% else %>
-          <%= image_tag "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg", class: "avatar" %>
+          <%= image_tag "https://example.com/default-avatar.jpg", class: "avatar" %>
         <% end %>
-        <!-- Name and Content -->
         <div class="ms-2 flex-grow-1">
           <p class="username mb-0"><strong><%= reply.user.name %></strong></p>
           <p class="reply-content mb-0"><%= reply.content %></p>
         </div>
       </div>
     <% end %>
-    <%= render 'topics/reply_form', comment: comment, new_comment: new_comment %>
+    <%= render 'topics/reply_form', comment: comment, new_comment: new_comment || Comment.new %>
   </div>
 </div>
