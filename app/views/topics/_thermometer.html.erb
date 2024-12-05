@@ -1,12 +1,19 @@
 <div id="thermometer_<%= @topic.id %>" class="thermometer-container">
   <div class="thermometer">
     <div class="ticks">
-      <% (0..50).step(10).reverse_each do |tick| %>
-        <div class="tick d-flex align-items-center" style="top: <%= (50 - tick) / 50.0 * 100 %>%;">
+      <% max_value = 20 %> <!-- Maximum value for the thermometer -->
+      <% step_value = 5 %> <!-- Step size for ticks -->
+      <% (0..max_value).step(step_value).reverse_each do |tick| %>
+        <div class="tick d-flex align-items-center" style="top: <%= (max_value - tick) / max_value.to_f * 100 %>%;">
           <span class="tick-number"><%= tick %></span>
         </div>
       <% end %>
     </div>
-    <div class="level" style="height: <%= ([thermometer_percentage, 50].min / 50.0) * 100 %>%;"></div>
+    <!-- Ensure the initial height is 0% for animation -->
+    <div
+      class="level"
+      data-percentage="<%= ([thermometer_percentage, max_value].min / max_value.to_f) * 100 %>"
+      style="height: 0%;"
+    ></div>
   </div>
 </div>

@@ -24,7 +24,7 @@
 .username {
   font-size: 14px;
   color: #122b6e;
-  font-weight:900;
+  font-weight: 900;
   font-style: italic;
   display: flex;
   display: inline-block;
@@ -43,55 +43,54 @@ h1, h2, h3 {
   text-align: center;
   margin: 20px auto;
   position: relative;
+}
 
-  .thermometer {
-    position: relative;
-    width: 50px;
-    height: 200px;
-    border: 2px solid #333;
-    background: #f3f3f3;
-    border-radius: 5px;
+.thermometer {
+  position: relative;
+  width: 40px; /* Adjusted width to make it narrower */
+  height: 200px; /* Adjusted height to make it shorter */
+  border: 2px solid #333;
+  background: #f3f3f3;
+  border-radius: 5px;
+}
 
-    .ticks {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 50%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+.thermometer .ticks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-      .tick {
-        position: relative;
-        width: 100%;
+.thermometer .tick {
+  position: absolute;
+  width: 100%;
+}
 
-        &::before {
-          content: '';
-          width: 90%;
-          height: 1px;
-          background-color: #333;
-          position: absolute;
-          left: 5%;
-        }
+.thermometer .tick::before {
+  content: '';
+  width: 90%;
+  height: 1px;
+  background-color: #333;
+  position: absolute;
+  left: 5%;
+}
 
-        .tick-number {
-          position: absolute;
-          font-size: 12px;
-          color: #333;
-          right: -40px;
-        }
-      }
-    }
+.thermometer .tick-number {
+  position: absolute;
+  font-size: 10px; /* Smaller font size for numbers */
+  color: #333;
+  right: -35px; /* Adjusted position to align with smaller size */
+}
 
-    .level {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      background: linear-gradient(0deg, rgba(255, 255, 0, 0.683), rgba(255, 153, 0, 0.852), rgb(255, 0, 0));
-      background-size: 100% 200%;
-      background-position: bottom;
-      transition: height 0.3s ease, background-position 0.3s ease;
-    }
-  }
+.thermometer .level {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(0deg, rgba(255, 255, 0, 0.683), rgba(255, 153, 0, 0.852), rgb(255, 0, 0));
+  transition: height 1s ease; /* Smooth transition for the height */
+  border-radius: 3px;
 }

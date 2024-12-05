@@ -1,0 +1,36 @@
+<div class="sub-comment p-1 d-flex flex-column justify-content-end" data-controller="vote" data-vote-id="<%= comment.id %>">
+  <div id="replies_turbo_<%= comment.id %>">
+    <!-- Avatar -->
+    <% if comment.user.photo.present? %>
+      <%= cl_image_tag comment.user.photo.key, style: "width: 20px; height: 20px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); outline: 2px solid #d4c1a9;" %>
+    <% else %>
+      <%= image_tag "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg", class: "avatar" , style: "width: 20px; height: 20px; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); outline: 2px solid #d4c1a9;"%>
+    <% end %>
+    <!-- Name and Content -->
+    <div class="ms-2 flex-grow-1">
+      <p class="username mb-0"><strong><%= comment.user.name %></strong></p>
+      <div class="d-flex justify-content-between">
+        <p class="reply-content mb-0"><%= comment.content %></p>
+        <div class="d-flex align-items-center mt-0 mt-auto text-end px-2">
+          <i class="fa-regular fa-comments" data-action="click->toggle#toggleSecondReplies" data-action="click->toggle#toggleHidden"></i>
+          <p > <%= comment.comments.count %> </p>
+        </div>
+      </div>
+    </div>
+    <div class="add-comment-bar replies d-flex flex-column justify-content-center w-100 px-3 mt-3 <%= "reply-expand" if defined?(expanded) && expanded %>" data-toggle-target="secondReplies">
+      <div id="third-level-comments-<%=comment.id%>" data-toggle-target="secondReplies">
+        <%= render comment.comments %>
+      </div>
+      <%= simple_form_for [comment.topic, new_comment], class:"d-flex w-100" do |f| %>
+        <%= hidden_field_tag "comment[parent_id]", comment.id %>
+        <%= hidden_field_tag "reply", true %>
+        <div class="w-100 d-flex justify-content-center">
+          <%= f.input :content, label: false, input_html: { class: "form-control flex-grow-1 w-100", rows: 1 } %>
+          <div>
+            <%= f.submit "add reply", class: "btn btn-primary btn-reply ms-2" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
